@@ -19,11 +19,11 @@ import java.util.*;
  * A world for turtles to play inside of.
  * Usage example:
  * <pre>
- * com.pluralsight.drawing.World basic = new com.pluralsight.drawing.World();
- * com.pluralsight.drawing.World fancy = new com.pluralsight.drawing.World(640, 480, Color.YELLOW);
+ * World basic = new World();
+ * World fancy = new World(640, 480, Color.YELLOW);
  *
- * com.pluralsight.drawing.Turtle t1 = new com.pluralsight.drawing.Turtle(basic);
- * com.pluralsight.drawing.Turtle t2 = new com.pluralsight.drawing.Turtle(fancy);
+ * Turtle t1 = new Turtle(basic);
+ * Turtle t2 = new Turtle(fancy);
  *
  * t1.forward(100);
  * basic.erase();
@@ -45,13 +45,19 @@ public class World extends JFrame {
     private static final long serialVersionUID = 20130902L;
     public final int centerX;
     public final int centerY;
-    private BufferedImage overlay, ground, back, front;
-    private Graphics2D og, gg, bg, fg;
-    private ArrayList<Turtle> turtles;
+    private final BufferedImage overlay;
+    private final BufferedImage ground;
+    private final BufferedImage back;
+    private final BufferedImage front;
+    private final Graphics2D og;
+    private final Graphics2D gg;
+    private final Graphics2D bg;
+    private final Graphics2D fg;
+    private final ArrayList<Turtle> turtles;
 
 
     /**
-     * Creates a new com.pluralsight.drawing.World for Turtles to play in.
+     * Creates a new World for Turtles to play in.
      */
     public World() {
         this(600, 600);
@@ -62,19 +68,19 @@ public class World extends JFrame {
     }
 
     public World(int width, int height, Color backgroundColor) {
-        super("com.pluralsight.drawing.Turtle com.pluralsight.drawing.World");
-        this.centerX = width / 2;
-        this.centerY = height / 2;
+        super("Turtle World");
+        centerX = width / 2;
+        centerY = height / 2;
 
-        this.overlay = new BufferedImage(2 * this.centerX, 2 * this.centerY, BufferedImage.TYPE_INT_ARGB);
-        this.ground = new BufferedImage(2 * this.centerX, 2 * this.centerY, BufferedImage.TYPE_INT_ARGB);
-        this.back = new BufferedImage(2 * this.centerX, 2 * this.centerY, BufferedImage.TYPE_INT_ARGB);
-        this.front = new BufferedImage(2 * this.centerX, 2 * this.centerY, BufferedImage.TYPE_INT_ARGB);
+        overlay = new BufferedImage(2 * centerX, 2 * centerY, BufferedImage.TYPE_INT_ARGB);
+        ground = new BufferedImage(2 * centerX, 2 * centerY, BufferedImage.TYPE_INT_ARGB);
+        back = new BufferedImage(2 * centerX, 2 * centerY, BufferedImage.TYPE_INT_ARGB);
+        front = new BufferedImage(2 * centerX, 2 * centerY, BufferedImage.TYPE_INT_ARGB);
 
-        this.og = (Graphics2D) this.overlay.getGraphics();
-        this.gg = (Graphics2D) this.ground.getGraphics();
-        this.bg = (Graphics2D) this.back.getGraphics();
-        this.fg = (Graphics2D) this.front.getGraphics();
+        og = (Graphics2D) overlay.getGraphics();
+        gg = (Graphics2D) ground.getGraphics();
+        bg = (Graphics2D) back.getGraphics();
+        fg = (Graphics2D) front.getGraphics();
         og.setBackground(new Color(0, 0, 0, 0));
         gg.setBackground(backgroundColor);
 
@@ -86,13 +92,13 @@ public class World extends JFrame {
             g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         }
 
-        this.setContentPane(new JLabel(new ImageIcon(this.front)));
-        this.pack();
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.addKeyListener(new java.awt.event.KeyListener() {
+        setContentPane(new JLabel(new ImageIcon(front)));
+        pack();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent arg0) {
-                World.this.dispose();
+                dispose();
             }
 
             @Override
@@ -104,20 +110,20 @@ public class World extends JFrame {
             }
         });
 
-        this.clearOverlay();
-        this.erase();
+        clearOverlay();
+        erase();
 
-        this.repaint();
-        this.setVisible(true);
+        repaint();
+        setVisible(true);
 
-        this.turtles = new ArrayList<Turtle>();
+        turtles = new ArrayList<Turtle>();
     }
 
     /**
      * Erases all existing paths
      */
     public void erase() {
-        this.gg.clearRect(0, 0, this.ground.getWidth(), this.ground.getHeight());
+        gg.clearRect(0, 0, ground.getWidth(), ground.getHeight());
     }
 
     /**
@@ -129,12 +135,11 @@ public class World extends JFrame {
     public void saveAs(String filename) {
         try {
             int dot = filename.lastIndexOf('.');
-            if (dot < 0 || dot == filename.length() - 1) {
+            if (dot < 0 || dot == filename.length() - 1)
                 throw new IllegalArgumentException("The filename must end in a valid image extension, like .png or .jpg");
-            }
             String ext = filename.substring(dot + 1).toLowerCase();
             File f = new File(filename);
-            ImageIO.write(this.front, ext, f);
+            ImageIO.write(front, ext, f);
         } catch (Throwable t) {
             System.err.println("Error saving file: " + t.getMessage());
         }
@@ -144,68 +149,66 @@ public class World extends JFrame {
      * Erases all existing paths
      */
     private void clearOverlay() {
-        this.og.clearRect(0, 0, this.overlay.getWidth(), this.overlay.getHeight());
+        og.clearRect(0, 0, overlay.getWidth(), overlay.getHeight());
     }
 
     /**
-     * Should only called by the com.pluralsight.drawing.Turtle class constructor
+     * Should only called by the Turtle class constructor
      */
     void addTurtle(Turtle t) {
-        this.turtles.add(t);
-        this.turtleMoved();
+        turtles.add(t);
+        turtleMoved();
     }
 
     /**
-     * Should only called by com.pluralsight.drawing.Turtle class methods
+     * Should only called by Turtle class methods
      */
     void drawLine(Point2D p1, Point2D p2, double width, Color color) {
         // draw the line
-        this.gg.setColor(color);
-        this.gg.setStroke(new BasicStroke((float) width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        gg.setColor(color);
+        gg.setStroke(new BasicStroke((float) width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         Line2D.Double line = new Line2D.Double(p1, p2);
-        this.gg.draw(line);
+        gg.draw(line);
 
         // show the drawn lines
-        this.blit();
+        blit();
     }
 
     private void blit() {
-        this.bg.drawImage(this.ground, 0, 0, null);
-        this.bg.drawImage(this.overlay, 0, 0, null);
-        this.fg.drawImage(this.back, 0, 0, this);
-        this.repaint();
+        bg.drawImage(ground, 0, 0, null);
+        bg.drawImage(overlay, 0, 0, null);
+        fg.drawImage(back, 0, 0, this);
+        repaint();
     }
 
     /**
-     * Should only called by com.pluralsight.drawing.Turtle class methods
+     * Should only called by Turtle class methods
      */
     void drawLine(Point2D p1, double nx, double ny, double width, Color color) {
-        this.drawLine(p1, new Point2D.Double(nx, ny), width, color);
+        drawLine(p1, new Point2D.Double(nx, ny), width, color);
     }
 
     /**
-     * Should only called by com.pluralsight.drawing.Turtle class methods
+     * Should only called by Turtle class methods
      */
     void turtleMoved() {
         // show the drawn lines
-        this.clearOverlay();
+        clearOverlay();
         // add the turtles over top
-        for (Turtle t : this.turtles) {
-            t._how_world_draw_turtles(this.og);
-        }
+        for (Turtle t : turtles) t._how_world_draw_turtles(og);
         // force the OS to show what's shown
-        this.blit();
+        blit();
     }
 
     /**
-     * To be used by com.pluralsight.drawing.Turtle class only
+     * To be used by Turtle class only
      *
      * @param img       the Image to draw
      * @param placement the Affine Transform to use in drawing it
      */
     void drawImage(Image img, AffineTransform placement) {
-        this.gg.drawImage(img, placement, this);
-        this.blit();
+        gg.drawImage(img, placement, this);
+        blit();
     }
 
 }

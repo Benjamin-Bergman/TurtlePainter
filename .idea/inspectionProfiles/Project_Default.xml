@@ -210,7 +210,7 @@
     <inspection_tool class="ExtendsThrowable" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ExtendsUtilityClass" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="FallthruInSwitchStatement" enabled="true" level="ERROR" enabled_by_default="true" editorAttributes="ERRORS_ATTRIBUTES" />
-    <inspection_tool class="FeatureEnvy" enabled="true" level="WARNING" enabled_by_default="true">
+    <inspection_tool class="FeatureEnvy" enabled="false" level="WARNING" enabled_by_default="false">
       <scope name="Tests" level="WARNING" enabled="false">
         <option name="ignoreTestCases" value="false" />
       </scope>
@@ -585,7 +585,6 @@
     <inspection_tool class="ResultOfObjectAllocationIgnored" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ResultSetIndexZero" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ReturnSeparatedFromComputation" enabled="true" level="WARNING" enabled_by_default="true" editorAttributes="WARNING_ATTRIBUTES" />
-    <inspection_tool class="ReturnThis" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ReuseOfLocalVariable" enabled="true" level="WARNING" enabled_by_default="true" editorAttributes="WARNING_ATTRIBUTES" />
     <inspection_tool class="RuntimeExec" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SafeLock" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -691,6 +690,7 @@
       <option name="doNotWeakenInferredVariableType" value="true" />
     </inspection_tool>
     <inspection_tool class="TypeParameterExtendsFinalClass" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="UNCHECKED_WARNING" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="UncheckedExceptionClass" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UnclearBinaryExpression" enabled="true" level="INFORMATION" enabled_by_default="true" editorAttributes="INFORMATION_ATTRIBUTES" />
     <inspection_tool class="UnconditionalWait" enabled="true" level="WARNING" enabled_by_default="true" />
