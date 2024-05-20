@@ -2,6 +2,10 @@
  * Copyright (c) Benjamin Bergman 2024.
  */
 
+package com.pluralsight;
+
+import com.pluralsight.drawing.*;
+
 import java.awt.*;
 
 @SuppressWarnings("UtilityClass")
