@@ -49,8 +49,8 @@ public class Turtle {
     };
     private static int baseIndex;
     private final World world;
-    private double theta;
     private final Point2D.Double location;
+    private double theta;
     private boolean isdown;
     // private GeneralPath trail; // not used
     private Color color;
@@ -333,6 +333,15 @@ public class Turtle {
         pause = (int) (seconds * 1000);
     }
 
+    private void pause() {
+        if (delay == 0)
+            return;
+        try {
+            Thread.sleep(pause);
+        } catch (InterruptedException ignored) {
+        }
+    }
+
     /**
      * Draws the shell of the turtle.
      * Should only be called by com.pluralsight.drawing.World class
@@ -493,13 +502,6 @@ public class Turtle {
             pause();
         }
 
-    }
-
-    private void pause() {
-        try {
-            Thread.sleep(pause);
-        } catch (InterruptedException e) {
-        }
     }
 
 

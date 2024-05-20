@@ -12,8 +12,14 @@ import manifold.ext.props.rt.api.*;
  * This shape's origin is in its upper-left corner.
  */
 public final class Rect extends Shape<Rect> {
+    /**
+     * The width of this rectangle.
+     */
     @var
     public double width = 1;
+    /**
+     * The height of this rectangle.
+     */
     @var
     public double height = 1;
 

@@ -34,12 +34,15 @@ public abstract class Shape<T extends Shape<T>> implements TurtleDrawable {
 
     @Override
     public final void draw(Turtle turtle) {
+        var delay = turtle.delay;
+        turtle.delay = 0;
         turtle.penUp();
         turtle.setColor(color);
         turtle.setPenWidth(strokeWidth);
         turtle.goTo(origin);
         turtle.setHeading(0);
         turtle.penDown();
+        turtle.delay = delay;
 
         drawShape(turtle);
     }
