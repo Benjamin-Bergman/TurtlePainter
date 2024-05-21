@@ -25,7 +25,7 @@ public final class Painting implements Serializable {
     @val
     public final Turtle turtle;
     @val
-    private final List<Shape> shapes;
+    private final List<Shape<?>> shapes;
     private final AtomicInteger currentRun = new AtomicInteger(0);
     private final AtomicBoolean running = new AtomicBoolean(false);
 
@@ -36,7 +36,7 @@ public final class Painting implements Serializable {
      * @param world  The canvas to draw to
      * @param turtle The turtle to draw with
      */
-    public Painting(int width, int height, List<Shape> shapes, World world, Turtle turtle) {
+    public Painting(int width, int height, List<Shape<?>> shapes, World world, Turtle turtle) {
         this.width = width;
         this.height = height;
         this.shapes = new ArrayList<>(shapes);
@@ -66,7 +66,7 @@ public final class Painting implements Serializable {
      *
      * @param shape The shape to add
      */
-    public void add(Shape shape) {
+    public void add(Shape<?> shape) {
         shapes.add(shape);
 
         // This shouldn't redraw the whole painting,
@@ -98,7 +98,7 @@ public final class Painting implements Serializable {
 
             world.resizeWorld(width, height);
             for (int i = 0; i < shapes.size(); i++) {
-                Shape shape = shapes.get(i);
+                Shape<?> shape = shapes.get(i);
                 shape.draw(turtle);
                 if (monitor != null && currentRun.getAcquire() != monitor)
                     break;

@@ -19,7 +19,7 @@ final class MainApp {
 
         turtle.delay = 0.1;
 
-        ArrayList<Shape> shapes = new ArrayList<>();
+        ArrayList<Shape<?>> shapes = new ArrayList<>();
         shapes.add(new Circle());
         shapes.add(new Circle().withColor(Color.BLUE).withRadius(20));
         shapes.add(new Circle().withRadius(30));
@@ -27,8 +27,9 @@ final class MainApp {
         shapes.add(new RegularPolygon().withRadius(40));
         Painting p = new Painting(100, 100, shapes, world, turtle);
 
-        Scanner s = new Scanner(System.in);
-        do p.drawAsync();
-        while (!"exit".equals(s.nextLine()));
+        try (Scanner scanner = new Scanner(System.in)) {
+            do p.drawAsync();
+            while (!"exit".equals(scanner.nextLine()));
+        }
     }
 }
