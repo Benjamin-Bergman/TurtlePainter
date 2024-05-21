@@ -8,7 +8,6 @@ import com.pluralsight.drawing.*;
 import manifold.ext.props.rt.api.*;
 import org.jetbrains.annotations.*;
 
-import java.awt.*;
 import java.awt.geom.*;
 
 /**
@@ -41,11 +40,11 @@ public final class RegularPolygon extends Shape<RegularPolygon> {
     public RegularPolygon() {
     }
 
-    private RegularPolygon(Color color, double strokeWidth, Point2D origin, int numSides, double angle, double radius) {
-        super(color, strokeWidth, origin);
-        this.numSides = numSides;
-        this.angle = angle;
-        this.radius = radius;
+    private RegularPolygon(RegularPolygon copied) {
+        super(copied);
+        numSides = copied.numSides;
+        angle = copied.angle;
+        radius = copied.radius;
     }
 
     /**
@@ -117,6 +116,6 @@ public final class RegularPolygon extends Shape<RegularPolygon> {
 
     @Override
     protected @NotNull RegularPolygon copy() {
-        return new RegularPolygon(color, strokeWidth, origin, numSides, angle, radius);
+        return new RegularPolygon(this);
     }
 }

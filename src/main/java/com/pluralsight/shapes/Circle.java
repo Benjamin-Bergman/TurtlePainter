@@ -8,9 +8,7 @@ import com.pluralsight.drawing.*;
 import manifold.ext.props.rt.api.*;
 import org.jetbrains.annotations.*;
 
-import java.awt.*;
 import java.awt.geom.*;
-import java.util.List;
 import java.util.*;
 
 /**
@@ -30,9 +28,9 @@ public final class Circle extends Shape<Circle> {
     public Circle() {
     }
 
-    private Circle(Color color, double strokeWidth, Point2D origin, double radius) {
-        super(color, strokeWidth, origin);
-        this.radius = radius;
+    private Circle(Circle copied) {
+        super(copied);
+        radius = copied.radius;
     }
 
     @SuppressWarnings("ReassignedVariable")
@@ -99,6 +97,6 @@ public final class Circle extends Shape<Circle> {
 
     @Override
     protected @NotNull Circle copy() {
-        return new Circle(color, strokeWidth, origin, radius);
+        return new Circle(this);
     }
 }

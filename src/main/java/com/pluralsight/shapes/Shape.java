@@ -40,10 +40,15 @@ public abstract class Shape<T extends Shape<T>> implements TurtleDrawable, Seria
     protected Shape() {
     }
 
-    protected Shape(Color color, double strokeWidth, Point2D origin) {
-        this.color = color;
-        this.strokeWidth = strokeWidth;
-        this.origin = origin;
+    /**
+     * Copy constructor.
+     *
+     * @param copied The shape to copy from
+     */
+    protected Shape(Shape copied) {
+        color = copied.color;
+        strokeWidth = copied.strokeWidth;
+        origin = copied.origin;
     }
 
     @Override

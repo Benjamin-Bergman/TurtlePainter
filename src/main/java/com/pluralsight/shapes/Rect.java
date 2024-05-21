@@ -8,9 +8,6 @@ import com.pluralsight.drawing.*;
 import manifold.ext.props.rt.api.*;
 import org.jetbrains.annotations.*;
 
-import java.awt.*;
-import java.awt.geom.*;
-
 /**
  * Represents a rectangle with a specific width and height.
  * This shape's origin is in its upper-left corner.
@@ -35,10 +32,10 @@ public final class Rect extends Shape<Rect> {
     public Rect() {
     }
 
-    private Rect(Color color, double strokeWidth, Point2D origin, double width, double height) {
-        super(color, strokeWidth, origin);
-        this.width = width;
-        this.height = height;
+    private Rect(Rect copied) {
+        super(copied);
+        width = copied.width;
+        height = copied.height;
     }
 
     /**
@@ -80,6 +77,6 @@ public final class Rect extends Shape<Rect> {
 
     @Override
     protected @NotNull Rect copy() {
-        return new Rect(color, strokeWidth, origin, width, height);
+        return new Rect(this);
     }
 }
