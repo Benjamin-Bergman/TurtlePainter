@@ -20,17 +20,30 @@ public abstract class Shape<T extends Shape<T>> implements TurtleDrawable {
      * The color used to draw this shape.
      */
     @var
-    public final Color color = Color.BLACK;
+    @set(PropOption.Private)
+    public final Color color;
     /**
      * The width of stroke to use when drawing this shape.
      */
     @var
-    public final double strokeWidth = 1;
+    @set(PropOption.Private)
+    public final double strokeWidth;
     /**
      * The origin point for this shape.
      */
     @var
-    public final Point2D origin = new Point2D.Double(0, 0);
+    @set(PropOption.Private)
+    public final Point2D origin;
+
+    protected Shape() {
+        this(Color.BLACK, 1, new Point2D.Double(0, 0));
+    }
+
+    protected Shape(Color color, double strokeWidth, Point2D origin) {
+        this.color = color;
+        this.strokeWidth = strokeWidth;
+        this.origin = origin;
+    }
 
     @Override
     public final void draw(Turtle turtle) {
@@ -48,36 +61,39 @@ public abstract class Shape<T extends Shape<T>> implements TurtleDrawable {
     }
 
     /**
-     * Mutates this shape to use a different color.
+     * Makes a new shape with a different color.
      *
      * @param color The color to use
-     * @return {@code this}
+     * @return A copied shape with a new color
      */
     public T withColor(Color color) {
-        this.color = color;
-        return (T) this;
+        var cp = copy();
+        cp.color = color;
+        return cp;
     }
 
     /**
-     * Mutates this shape to use a different stroke width.
+     * Makes a new shape with a different stroke width.
      *
      * @param strokeWidth The stroke width to use
-     * @return {@code this}
+     * @return A copied shape with a new stroke width
      */
     public T withStrokeWidth(double strokeWidth) {
-        this.strokeWidth = strokeWidth;
-        return (T) this;
+        var cp = copy();
+        cp.strokeWidth = strokeWidth;
+        return cp;
     }
 
     /**
-     * Mutates this shape to use a different origin.
+     * Makes a new shape with a different origin.
      *
      * @param origin The origin to use
-     * @return {@code this}
+     * @return A copied shape with a new origin
      */
     public T withOrigin(Point2D origin) {
-        this.origin = origin;
-        return (T) this;
+        var cp = copy();
+        cp.origin = origin;
+        return cp;
     }
 
     /**
@@ -87,4 +103,11 @@ public abstract class Shape<T extends Shape<T>> implements TurtleDrawable {
      * @param turtle The turtle to draw with
      */
     protected abstract void drawShape(Turtle turtle);
+
+    /**
+     * Creates a copy of this object.
+     *
+     * @return An identical object
+     */
+    protected abstract T copy();
 }

@@ -7,7 +7,9 @@ package com.pluralsight.shapes;
 import com.pluralsight.drawing.*;
 import manifold.ext.props.rt.api.*;
 
+import java.awt.*;
 import java.awt.geom.*;
+import java.util.List;
 import java.util.*;
 
 /**
@@ -20,6 +22,17 @@ public final class Circle extends Shape<Circle> {
      */
     @var
     public double radius = 10;
+
+    /**
+     * Creates a new Circle with default values.
+     */
+    public Circle() {
+    }
+
+    private Circle(Color color, double strokeWidth, Point2D origin, double radius) {
+        super(color, strokeWidth, origin);
+        this.radius = radius;
+    }
 
     @SuppressWarnings("ReassignedVariable")
     // See https://en.wikipedia.org/wiki/Midpoint_circle_algorithm
@@ -51,10 +64,10 @@ public final class Circle extends Shape<Circle> {
     }
 
     /**
-     * Mutates this circle to use a different radius.
+     * Makes a new circle with a different radius.
      *
      * @param radius The radius to use
-     * @return {@code this}
+     * @return A copied circle with a new radius
      */
     public Circle withRadius(double radius) {
         this.radius = radius;
@@ -79,5 +92,10 @@ public final class Circle extends Shape<Circle> {
             });
 
         turtle.delay = delay;
+    }
+
+    @Override
+    protected Circle copy() {
+        return new Circle(color, strokeWidth, origin, radius);
     }
 }
