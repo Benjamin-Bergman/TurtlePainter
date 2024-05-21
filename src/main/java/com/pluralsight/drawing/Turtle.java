@@ -334,7 +334,7 @@ public class Turtle {
     }
 
     public void pause() {
-        if (delay == 0)
+        if (pause == 0)
             return;
         try {
             Thread.sleep(pause);

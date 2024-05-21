@@ -21,11 +21,11 @@ final class MainApp {
 
         ArrayList<Shape> shapes = new ArrayList<>();
         shapes.add(new Circle());
-        shapes.add(new Circle().withColor(Color.BLUE).withRadius(280));
+        shapes.add(new Circle().withColor(Color.BLUE).withRadius(20));
         shapes.add(new Circle().withRadius(30));
         shapes.add(new Rect().withWidth(40).withHeight(40));
         shapes.add(new RegularPolygon().withRadius(40));
-        Painting p = new Painting(600, 600, shapes, world, turtle);
+        Painting p = new Painting(100, 100, shapes, world, turtle);
 
         Scanner s = new Scanner(System.in);
         do p.drawAsync();
