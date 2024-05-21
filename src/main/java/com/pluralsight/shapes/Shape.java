@@ -21,22 +21,21 @@ public abstract class Shape<T extends Shape<T>> implements TurtleDrawable {
      */
     @var
     @set(PropOption.Private)
-    public final Color color;
+    public final Color color = Color.BLACK;
     /**
      * The width of stroke to use when drawing this shape.
      */
     @var
     @set(PropOption.Private)
-    public final double strokeWidth;
+    public final double strokeWidth = 1;
     /**
      * The origin point for this shape.
      */
     @var
     @set(PropOption.Private)
-    public final Point2D origin;
+    public final Point2D origin = new Point2D.Double(0, 0);
 
     protected Shape() {
-        this(Color.BLACK, 1, new Point2D.Double(0, 0));
     }
 
     protected Shape(Color color, double strokeWidth, Point2D origin) {

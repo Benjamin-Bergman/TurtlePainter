@@ -70,8 +70,9 @@ public final class Circle extends Shape<Circle> {
      * @return A copied circle with a new radius
      */
     public Circle withRadius(double radius) {
-        this.radius = radius;
-        return this;
+        var cp = copy();
+        cp.radius = radius;
+        return cp;
     }
 
     @Override
