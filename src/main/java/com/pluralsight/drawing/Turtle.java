@@ -333,7 +333,7 @@ public class Turtle {
         pause = (int) (seconds * 1000);
     }
 
-    private void pause() {
+    public void pause() {
         if (delay == 0)
             return;
         try {

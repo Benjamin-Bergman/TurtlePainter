@@ -43,17 +43,18 @@ import java.util.*;
 public class World extends JFrame {
     /// version number based on date of creation
     private static final long serialVersionUID = 20130902L;
-    public final int centerX;
-    public final int centerY;
-    private final BufferedImage overlay;
-    private final BufferedImage ground;
-    private final BufferedImage back;
-    private final BufferedImage front;
-    private final Graphics2D og;
-    private final Graphics2D gg;
-    private final Graphics2D bg;
-    private final Graphics2D fg;
     private final ArrayList<Turtle> turtles;
+    private final Color backgroundColor;
+    public int centerX;
+    public int centerY;
+    private BufferedImage overlay;
+    private BufferedImage ground;
+    private BufferedImage back;
+    private BufferedImage front;
+    private Graphics2D og;
+    private Graphics2D gg;
+    private Graphics2D bg;
+    private Graphics2D fg;
 
 
     /**
@@ -69,6 +70,31 @@ public class World extends JFrame {
 
     public World(int width, int height, Color backgroundColor) {
         super("Turtle World");
+
+        this.backgroundColor = backgroundColor;
+        resizeWorld(width, height);
+
+        pack();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent arg0) {
+                dispose();
+            }
+
+            @Override
+            public void keyPressed(KeyEvent arg0) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent arg0) {
+            }
+        });
+
+        turtles = new ArrayList<Turtle>();
+    }
+
+    public final void resizeWorld(int width, int height) {
         centerX = width / 2;
         centerY = height / 2;
 
@@ -93,30 +119,12 @@ public class World extends JFrame {
         }
 
         setContentPane(new JLabel(new ImageIcon(front)));
-        pack();
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent arg0) {
-                dispose();
-            }
-
-            @Override
-            public void keyPressed(KeyEvent arg0) {
-            }
-
-            @Override
-            public void keyReleased(KeyEvent arg0) {
-            }
-        });
 
         clearOverlay();
         erase();
 
         repaint();
         setVisible(true);
-
-        turtles = new ArrayList<Turtle>();
     }
 
     /**
