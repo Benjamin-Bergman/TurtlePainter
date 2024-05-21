@@ -7,7 +7,7 @@ package com.pluralsight;
 import com.pluralsight.drawing.*;
 import com.pluralsight.shapes.*;
 
-import java.awt.*;
+import java.io.*;
 
 @SuppressWarnings("UtilityClass")
 final class MainApp {
@@ -64,16 +64,26 @@ final class MainApp {
 //            shape.withNumSides(sides).draw(turtle);
 
         var circ = new RegularPolygon().withNumSides(8);
-        turtle.delay = 0;
-        for (
-            double r = 1, angle = 0;
-            r < Math.sqrt(width * width + height * height);
-            r *= Math.pow(2.0, 1.0 / 8.0), angle += 8
-        )
-            circ.withRadius(r)
-                .withAngle(angle)
-                .withColor(Color.getHSBColor((float) angle / 60.0f, 1, 0.5f))
-                .draw(turtle);
+//        turtle.delay = 0;
+//        for (
+//            double r = 1, angle = 0;
+//            r < Math.sqrt(width * width + height * height);
+//            r *= Math.pow(2.0, 1.0 / 8.0), angle += 8
+//        )
+//            circ.withRadius(r)
+//                .withAngle(angle)
+//                .withColor(Color.getHSBColor((float) angle / 60.0f, 1, 0.5f))
+//                .draw(turtle);
+
+        Shape s;
+        try (var is = new PipedInputStream();
+             var os = new PipedOutputStream(is);
+             var oo = new ObjectOutputStream(os);
+             var oi = new ObjectInputStream(is)) {
+            oo.writeObject(circ);
+            s = (Shape) oi.readObject();
+        }
+        s.draw(turtle);
 
         turtle.penUp();
         turtle.goTo(-width - 100, -height - 100);

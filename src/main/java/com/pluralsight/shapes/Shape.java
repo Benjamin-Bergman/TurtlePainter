@@ -10,13 +10,14 @@ import org.jetbrains.annotations.*;
 
 import java.awt.*;
 import java.awt.geom.*;
+import java.io.*;
 
 /**
  * Represents a shape which can be drawn with a {@link Turtle}.
  *
  * @param <T> The implementing class
  */
-public abstract class Shape<T extends Shape<T>> implements TurtleDrawable {
+public abstract class Shape<T extends Shape<T>> implements TurtleDrawable, Serializable {
     /**
      * The color used to draw this shape.
      */
