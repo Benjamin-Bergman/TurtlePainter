@@ -6,6 +6,7 @@ package com.pluralsight.shapes;
 
 import com.pluralsight.drawing.*;
 import manifold.ext.props.rt.api.*;
+import org.jetbrains.annotations.*;
 
 import java.awt.*;
 import java.awt.geom.*;
@@ -65,6 +66,7 @@ public abstract class Shape<T extends Shape<T>> implements TurtleDrawable {
      * @param color The color to use
      * @return A copied shape with a new color
      */
+    @Contract("_ -> new")
     public T withColor(Color color) {
         var cp = copy();
         cp.color = color;
@@ -77,6 +79,7 @@ public abstract class Shape<T extends Shape<T>> implements TurtleDrawable {
      * @param strokeWidth The stroke width to use
      * @return A copied shape with a new stroke width
      */
+    @Contract("_ -> new")
     public T withStrokeWidth(double strokeWidth) {
         var cp = copy();
         cp.strokeWidth = strokeWidth;
@@ -89,6 +92,7 @@ public abstract class Shape<T extends Shape<T>> implements TurtleDrawable {
      * @param origin The origin to use
      * @return A copied shape with a new origin
      */
+    @Contract("_ -> new")
     public T withOrigin(Point2D origin) {
         var cp = copy();
         cp.origin = origin;
@@ -108,5 +112,7 @@ public abstract class Shape<T extends Shape<T>> implements TurtleDrawable {
      *
      * @return An identical object
      */
+    @NotNull
+    @Contract(" -> new")
     protected abstract T copy();
 }

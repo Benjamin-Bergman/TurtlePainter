@@ -6,6 +6,7 @@ package com.pluralsight.shapes;
 
 import com.pluralsight.drawing.*;
 import manifold.ext.props.rt.api.*;
+import org.jetbrains.annotations.*;
 
 import java.awt.*;
 import java.awt.geom.*;
@@ -46,6 +47,7 @@ public final class Rect extends Shape<Rect> {
      * @param width The width to use
      * @return A copied rect with a new width
      */
+    @Contract("_ -> new")
     public Rect withWidth(double width) {
         var cp = copy();
         cp.width = width;
@@ -58,6 +60,7 @@ public final class Rect extends Shape<Rect> {
      * @param height The height to use
      * @return A copied rect with a new height
      */
+    @Contract("_ -> new")
     public Rect withHeight(double height) {
         var cp = copy();
         cp.height = height;
@@ -76,7 +79,7 @@ public final class Rect extends Shape<Rect> {
     }
 
     @Override
-    protected Rect copy() {
+    protected @NotNull Rect copy() {
         return new Rect(color, strokeWidth, origin, width, height);
     }
 }

@@ -7,6 +7,8 @@ package com.pluralsight;
 import com.pluralsight.drawing.*;
 import com.pluralsight.shapes.*;
 
+import java.awt.*;
+
 @SuppressWarnings("UtilityClass")
 final class MainApp {
     public static void main(String[] args) {
@@ -57,9 +59,21 @@ final class MainApp {
 //            poly2.withRadius(rad).draw(turtle);
 //        }
 
-        var shape = new RegularPolygon().withRadius(200).withAngle(90);
-        for (int sides = 3; sides < 20; sides++)
-            shape.withNumSides(sides).draw(turtle);
+//        var shape = new RegularPolygon().withRadius(200).withAngle(90);
+//        for (int sides = 3; sides < 20; sides++)
+//            shape.withNumSides(sides).draw(turtle);
+
+        var circ = new RegularPolygon().withNumSides(8);
+        turtle.delay = 0;
+        for (
+            double r = 1, angle = 0;
+            r < Math.sqrt(width * width + height * height);
+            r *= Math.pow(2.0, 1.0 / 8.0), angle += 8
+        )
+            circ.withRadius(r)
+                .withAngle(angle)
+                .withColor(Color.getHSBColor((float) angle / 60.0f, 1, 0.5f))
+                .draw(turtle);
 
         turtle.penUp();
         turtle.goTo(-width - 100, -height - 100);

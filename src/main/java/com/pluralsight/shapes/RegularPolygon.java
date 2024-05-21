@@ -6,6 +6,7 @@ package com.pluralsight.shapes;
 
 import com.pluralsight.drawing.*;
 import manifold.ext.props.rt.api.*;
+import org.jetbrains.annotations.*;
 
 import java.awt.*;
 import java.awt.geom.*;
@@ -53,6 +54,7 @@ public final class RegularPolygon extends Shape<RegularPolygon> {
      * @param radius The radius to use
      * @return A copied polygon with a new radius
      */
+    @Contract("_ -> new")
     public RegularPolygon withRadius(double radius) {
         var cp = copy();
         cp.radius = radius;
@@ -65,6 +67,7 @@ public final class RegularPolygon extends Shape<RegularPolygon> {
      * @param angle The angle to use
      * @return A copied polygon with a new angle
      */
+    @Contract("_ -> new")
     public RegularPolygon withAngle(double angle) {
         var cp = copy();
         cp.angle = angle;
@@ -77,6 +80,7 @@ public final class RegularPolygon extends Shape<RegularPolygon> {
      * @param numSides The number of sides to use
      * @return A copied polygon with a new number of sides
      */
+    @Contract("_ -> new")
     public RegularPolygon withNumSides(int numSides) {
         var cp = copy();
         cp.numSides = numSides;
@@ -112,7 +116,7 @@ public final class RegularPolygon extends Shape<RegularPolygon> {
     }
 
     @Override
-    protected RegularPolygon copy() {
+    protected @NotNull RegularPolygon copy() {
         return new RegularPolygon(color, strokeWidth, origin, numSides, angle, radius);
     }
 }

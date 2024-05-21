@@ -6,6 +6,7 @@ package com.pluralsight.shapes;
 
 import com.pluralsight.drawing.*;
 import manifold.ext.props.rt.api.*;
+import org.jetbrains.annotations.*;
 
 import java.awt.*;
 import java.awt.geom.*;
@@ -69,6 +70,7 @@ public final class Circle extends Shape<Circle> {
      * @param radius The radius to use
      * @return A copied circle with a new radius
      */
+    @Contract("_ -> new")
     public Circle withRadius(double radius) {
         var cp = copy();
         cp.radius = radius;
@@ -96,7 +98,7 @@ public final class Circle extends Shape<Circle> {
     }
 
     @Override
-    protected Circle copy() {
+    protected @NotNull Circle copy() {
         return new Circle(color, strokeWidth, origin, radius);
     }
 }
