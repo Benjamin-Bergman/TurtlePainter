@@ -84,6 +84,9 @@ public final class Circle extends Shape<Circle> {
         turtle.penUp();
         turtle.goTo(pts[0]);
         turtle.penDown();
+        turtle.delay = delay;
+        turtle.pause();
+        turtle.delay = 0;
 
         //noinspection ResultOfMethodCallIgnored
         pts.stream()
@@ -94,6 +97,7 @@ public final class Circle extends Shape<Circle> {
             });
 
         turtle.delay = delay;
+        turtle.pause();
     }
 
     @Override

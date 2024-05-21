@@ -66,6 +66,7 @@ public final class Rect extends Shape<Rect> {
 
     @Override
     protected void drawShape(Turtle turtle) {
+        turtle.pause();
         turtle.forward(width);
         turtle.turnRight(90);
         turtle.forward(height);

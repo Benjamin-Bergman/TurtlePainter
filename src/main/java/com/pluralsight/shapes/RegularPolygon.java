@@ -103,14 +103,18 @@ public final class RegularPolygon extends Shape<RegularPolygon> {
 
     @Override
     protected void drawShape(Turtle turtle) {
+        var delay = turtle.delay;
+        turtle.delay = 0;
         turtle.turnLeft(angle);
         turtle.penUp();
         turtle.forward(radius);
+        turtle.delay = delay;
         turtle.turnLeft(90 + turnAngle / 2);
         turtle.penDown();
         for (int i = 0; i < numSides; i++) {
             turtle.forward(sideLength);
-            turtle.turnLeft(turnAngle);
+            if (i < numSides - 1)
+                turtle.turnLeft(turnAngle);
         }
     }
 
