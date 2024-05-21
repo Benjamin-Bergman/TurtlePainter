@@ -20,6 +20,7 @@ public final class Circle extends Shape<Circle> {
      * The radius of this circle.
      */
     @var
+    @set(PropOption.Private)
     public double radius = 10;
 
     /**
