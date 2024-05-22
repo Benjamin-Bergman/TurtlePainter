@@ -119,7 +119,7 @@ public final class RegularPolygon extends Shape<RegularPolygon> {
     }
 
     @Override
-    protected @NotNull RegularPolygon copy() {
+    public @NotNull RegularPolygon copy() {
         return new RegularPolygon(this);
     }
 }

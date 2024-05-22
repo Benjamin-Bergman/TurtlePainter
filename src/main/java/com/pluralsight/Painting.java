@@ -10,8 +10,8 @@ import manifold.ext.props.rt.api.*;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.atomic.*;
-import java.util.concurrent.locks.*;
+import java.util.concurrent.*;
+import java.util.stream.*;
 
 /**
  * Represents a painting.
@@ -27,12 +27,8 @@ public final class Painting implements Serializable {
     public final Turtle turtle;
     @val
     private final List<Shape<?>> shapes;
-    private final AtomicInteger currentRun = new AtomicInteger(0);
-
-    private final Lock runLock = new ReentrantLock();
-    private final Condition runSleep = runLock.newCondition();
-    private boolean running;
-    private boolean added;
+    private final transient BlockingQueue<Optional<Shape<?>>> queue = new LinkedBlockingQueue<>();
+    private transient boolean hasStarted;
 
     /**
      * @param width  The width in pixels
@@ -44,9 +40,13 @@ public final class Painting implements Serializable {
     public Painting(int width, int height, List<Shape<?>> shapes, World world, Turtle turtle) {
         this.width = width;
         this.height = height;
-        this.shapes = Collections.synchronizedList(new ArrayList<>(shapes));
+        this.shapes = shapes
+            .stream()
+            .map(Shape::copy)
+            .collect(Collectors.toCollection(ArrayList::new));
         this.world = world;
         this.turtle = turtle;
+        hasStarted = false;
     }
 
     /**
@@ -54,16 +54,12 @@ public final class Painting implements Serializable {
      * This will clear the canvas first.
      * This operation is asynchronous.
      */
-    public void drawAsync() {
-        new Thread(this::draw).start();
-    }
-
-    /**
-     * Draws this painting to the given World using the given Turtle.
-     * This will clear the canvas first.
-     */
     public void draw() {
-        draw(currentRun.incrementAndGet(), null);
+        queue.clear();
+        queue.put(Optional.empty());
+        shapes.forEach(shape -> queue.put(Optional.of(shape)));
+        if (!hasStarted)
+            start();
     }
 
     /**
@@ -72,14 +68,11 @@ public final class Painting implements Serializable {
      * @param shape The shape to add
      */
     public void add(Shape<?> shape) {
-        runLock.lock();
-        try {
-            shapes.add(shape);
-            if (running) added = true;
-            else new Thread(() -> draw(currentRun.incrementAndGet(), shapes.size() - 1)).start();
-        } finally {
-            runLock.unlock();
-        }
+        var cshape = shape.copy();
+        shapes.add(cshape);
+
+        if (hasStarted) queue.put(Optional.of(cshape));
+        else draw();
     }
 
     /**
@@ -88,66 +81,24 @@ public final class Painting implements Serializable {
      * @param index The index of the item to remove
      */
     public void remove(int index) {
-        shapes.remove(index);
-        drawAsync();
+        var removed = shapes.remove(index);
+
+        if (!hasStarted || !queue.removeIf(op -> op.isPresent() && op.get().UUID == removed.UUID))
+            draw();
     }
 
-    private void draw(int run, Integer startAt) {
-        runLock.lock();
-        try {
-            while (running) runSleep.await();
-            running = true;
-            added = false;
-        } finally {
-            runLock.unlock();
-        }
+    private void start() {
+        hasStarted = true;
+        new Thread(this::runDrawQueue).start();
+    }
 
-        if (currentRun.getAcquire() != run) {
-            runLock.lock();
-            try {
-                running = false;
-                runSleep.signalAll();
-                return;
-            } finally {
-                runLock.unlock();
-            }
-        }
-
-        if (startAt == null)
-            world.resizeWorld(width, height);
-        //noinspection ReassignedVariable
-        int i = Optional.ofNullable(startAt).orElse(0);
+    private void runDrawQueue() {
         while (true) {
-            //noinspection ForLoopWithMissingComponent
-            for (; i < shapes.size(); i++) {
-                Shape<?> shape = shapes.get(i);
-                shape.draw(turtle);
-                if (currentRun.getAcquire() != run) {
-                    runLock.lock();
-                    try {
-                        running = false;
-                        runSleep.signalAll();
-                        return;
-                    } finally {
-                        runLock.unlock();
-                    }
-                }
-            }
-
-            runLock.lock();
-            try {
-                if (!added) {
-                    turtle.penUp();
-                    turtle.goTo(world.width + 100, world.height + 100);
-
-                    running = false;
-                    runSleep.signalAll();
-                    return;
-                }
-                added = false;
-            } finally {
-                runLock.unlock();
-            }
+            var command = queue.take();
+            command.ifPresentOrElse(
+                shape -> shape.draw(turtle),
+                () -> world.resizeWorld(width, height)
+            );
         }
     }
 }

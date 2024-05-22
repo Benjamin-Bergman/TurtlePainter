@@ -36,7 +36,7 @@ final class MainApp {
                 if ("a".equals(input))
                     p.add(new Rect().withOrigin(new Point2D.Double(-30, 30)).withWidth(30).withHeight(30));
                 else
-                    p.drawAsync();
+                    p.draw();
             }
         }
     }

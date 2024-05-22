@@ -65,6 +65,11 @@ public final class Rect extends Shape<Rect> {
     }
 
     @Override
+    public @NotNull Rect copy() {
+        return new Rect(this);
+    }
+
+    @Override
     protected void drawShape(Turtle turtle) {
         turtle.pause();
         turtle.forward(width);
@@ -74,10 +79,5 @@ public final class Rect extends Shape<Rect> {
         turtle.forward(width);
         turtle.turnRight(90);
         turtle.forward(height);
-    }
-
-    @Override
-    protected @NotNull Rect copy() {
-        return new Rect(this);
     }
 }

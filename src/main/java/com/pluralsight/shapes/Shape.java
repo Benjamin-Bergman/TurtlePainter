@@ -18,6 +18,7 @@ import java.io.*;
  * @param <T> The implementing class
  */
 public abstract class Shape<T extends Shape<T>> implements TurtleDrawable, Serializable {
+    private static int UUIDCounter;
     /**
      * The color used to draw this shape.
      */
@@ -36,8 +37,12 @@ public abstract class Shape<T extends Shape<T>> implements TurtleDrawable, Seria
     @var
     @set(PropOption.Private)
     public final Point2D origin = new Point2D.Double(0, 0);
+    @val
+    public transient int UUID;
 
     protected Shape() {
+        UUID = UUIDCounter;
+        UUIDCounter++;
     }
 
     /**
@@ -46,6 +51,7 @@ public abstract class Shape<T extends Shape<T>> implements TurtleDrawable, Seria
      * @param copied The shape to copy from
      */
     protected Shape(Shape copied) {
+        this();
         color = copied.color;
         strokeWidth = copied.strokeWidth;
         origin = copied.origin;
@@ -106,19 +112,19 @@ public abstract class Shape<T extends Shape<T>> implements TurtleDrawable, Seria
     }
 
     /**
-     * Draws this object using the provided turtle.
-     * This method should not change any drawing parameters such as color.
-     *
-     * @param turtle The turtle to draw with
-     */
-    protected abstract void drawShape(Turtle turtle);
-
-    /**
      * Creates a copy of this object.
      *
      * @return An identical object
      */
     @NotNull
     @Contract(" -> new")
-    protected abstract T copy();
+    public abstract T copy();
+
+    /**
+     * Draws this object using the provided turtle.
+     * This method should not change any drawing parameters such as color.
+     *
+     * @param turtle The turtle to draw with
+     */
+    protected abstract void drawShape(Turtle turtle);
 }

@@ -101,7 +101,7 @@ public final class Circle extends Shape<Circle> {
     }
 
     @Override
-    protected @NotNull Circle copy() {
+    public @NotNull Circle copy() {
         return new Circle(this);
     }
 }
