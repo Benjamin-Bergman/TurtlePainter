@@ -8,7 +8,6 @@ import com.pluralsight.drawing.*;
 import com.pluralsight.shapes.*;
 import manifold.ext.props.rt.api.*;
 
-import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.*;
@@ -16,7 +15,7 @@ import java.util.stream.*;
 /**
  * Represents a painting.
  */
-public final class Painting implements Serializable {
+public final class Painting {
     /**
      * The width of this painting.
      */
@@ -40,21 +39,21 @@ public final class Painting implements Serializable {
     @set(PropOption.Private)
     public final transient Turtle turtle;
     @val
-    private final List<Shape<?>> shapes;
+    private final List<Shape<?>> shapeList;
     private final transient BlockingQueue<Optional<Shape<?>>> queue = new LinkedBlockingQueue<>();
     private transient Thread thread;
 
     /**
-     * @param width  The width in pixels
-     * @param height The height in pixels
-     * @param shapes The shapes making up the painting
-     * @param world  The canvas to draw to
-     * @param turtle The turtle to draw with
+     * @param width     The width in pixels
+     * @param height    The height in pixels
+     * @param shapeList The shapes making up the painting
+     * @param world     The canvas to draw to
+     * @param turtle    The turtle to draw with
      */
-    public Painting(int width, int height, Collection<Shape<?>> shapes, World world, Turtle turtle) {
+    public Painting(int width, int height, Collection<Shape<?>> shapeList, World world, Turtle turtle) {
         this.width = width;
         this.height = height;
-        this.shapes = shapes
+        this.shapeList = shapeList
             .stream()
             .map(Shape::copy)
             .collect(Collectors.toCollection(ArrayList::new));
@@ -85,7 +84,7 @@ public final class Painting implements Serializable {
     public void draw() {
         queue.clear();
         queue.put(Optional.empty());
-        shapes.forEach(shape -> queue.put(Optional.of(shape)));
+        shapeList.forEach(shape -> queue.put(Optional.of(shape)));
         if (thread == null)
             start();
     }
@@ -97,7 +96,7 @@ public final class Painting implements Serializable {
      */
     public void add(Shape<?> shape) {
         var cshape = shape.copy();
-        shapes.add(cshape);
+        shapeList.add(cshape);
 
         if (thread == null) draw();
         else queue.put(Optional.of(cshape));
@@ -109,7 +108,7 @@ public final class Painting implements Serializable {
      * @param index The index of the item to remove
      */
     public void remove(int index) {
-        var removed = shapes.remove(index);
+        var removed = shapeList.remove(index);
 
         if (thread == null || !queue.removeIf(op -> op.isPresent() && op.get().UUID == removed.UUID))
             draw();
@@ -124,6 +123,13 @@ public final class Painting implements Serializable {
         queue.clear();
         thread.interrupt();
         thread = null;
+    }
+
+    /**
+     * @return An unmodifiable view of the shapes composing this painting
+     */
+    public List<Shape<?>> getShapes() {
+        return Collections.unmodifiableList(shapeList);
     }
 
     private void start() {
