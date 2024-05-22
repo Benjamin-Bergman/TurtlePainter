@@ -28,7 +28,7 @@ public final class Painting implements Serializable {
     @val
     private final List<Shape<?>> shapes;
     private final transient BlockingQueue<Optional<Shape<?>>> queue = new LinkedBlockingQueue<>();
-    private transient boolean hasStarted;
+    private transient Thread thread;
 
     /**
      * @param width  The width in pixels
@@ -46,7 +46,7 @@ public final class Painting implements Serializable {
             .collect(Collectors.toCollection(ArrayList::new));
         this.world = world;
         this.turtle = turtle;
-        hasStarted = false;
+        thread = null;
     }
 
     /**
@@ -58,7 +58,7 @@ public final class Painting implements Serializable {
         queue.clear();
         queue.put(Optional.empty());
         shapes.forEach(shape -> queue.put(Optional.of(shape)));
-        if (!hasStarted)
+        if (thread == null)
             start();
     }
 
@@ -71,8 +71,8 @@ public final class Painting implements Serializable {
         var cshape = shape.copy();
         shapes.add(cshape);
 
-        if (hasStarted) queue.put(Optional.of(cshape));
-        else draw();
+        if (thread == null) draw();
+        else queue.put(Optional.of(cshape));
     }
 
     /**
@@ -83,29 +83,47 @@ public final class Painting implements Serializable {
     public void remove(int index) {
         var removed = shapes.remove(index);
 
-        if (!hasStarted || !queue.removeIf(op -> op.isPresent() && op.get().UUID == removed.UUID))
+        if (thread == null || !queue.removeIf(op -> op.isPresent() && op.get().UUID == removed.UUID))
             draw();
     }
 
+    /**
+     * Stops the render thread drawing this painting.
+     */
+    public void stop() {
+        if (thread == null)
+            return;
+        queue.clear();
+        thread.interrupt();
+        thread = null;
+    }
+
     private void start() {
-        hasStarted = true;
-        new Thread(this::runDrawQueue).start();
+        thread = new Thread(this::runDrawQueue);
+        thread.start();
     }
 
     private void runDrawQueue() {
-        while (true) {
-            //noinspection ReassignedVariable
-            var command = queue.poll();
-            //noinspection OptionalAssignedToNull
-            if (command == null) {
-                turtle.penUp();
-                turtle.goTo(width + 100, height + 100);
-                command = queue.take();
+        try {
+            while (true) {
+                if (Thread.currentThread().isInterrupted)
+                    return;
+                //noinspection ReassignedVariable
+                var command = queue.poll();
+                //noinspection OptionalAssignedToNull
+                if (command == null) {
+                    turtle.penUp();
+                    turtle.goTo(width + 100, height + 100);
+                    command = queue.take();
+                }
+                if (command.isPresent())
+                    command.get().draw(turtle);
+                else
+                    world.resizeWorld(width, height);
             }
-            if (command.isPresent())
-                command.get().draw(turtle);
-            else
-                world.resizeWorld(width, height);
+        } catch (InterruptedException ignored) {
+            turtle.penUp();
+            turtle.goTo(width + 100, height + 100);
         }
     }
 }
