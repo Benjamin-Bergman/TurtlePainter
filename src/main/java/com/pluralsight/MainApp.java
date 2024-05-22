@@ -35,6 +35,8 @@ final class MainApp {
                     break;
                 if ("a".equals(input))
                     p.add(new Rect().withOrigin(new Point2D.Double(-30, 30)).withWidth(30).withHeight(30));
+                else if ("b".equals(input))
+                    p.remove(3);
                 else
                     p.draw();
             }

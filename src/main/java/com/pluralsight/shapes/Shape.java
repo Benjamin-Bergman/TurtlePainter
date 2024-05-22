@@ -37,6 +37,12 @@ public abstract class Shape<T extends Shape<T>> implements TurtleDrawable, Seria
     @var
     @set(PropOption.Private)
     public final Point2D origin = new Point2D.Double(0, 0);
+    /**
+     * A unique identifier for this shape.
+     * <p>
+     * This is guaranteed to be unique for any given
+     * execution but may not be unique across multiple executions.
+     */
     @val
     public transient int UUID;
 

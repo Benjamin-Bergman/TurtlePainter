@@ -95,10 +95,10 @@ public final class Painting implements Serializable {
     private void runDrawQueue() {
         while (true) {
             var command = queue.take();
-            command.ifPresentOrElse(
-                shape -> shape.draw(turtle),
-                () -> world.resizeWorld(width, height)
-            );
+            if (command.isPresent())
+                command.get().draw(turtle);
+            else
+                world.resizeWorld(width, height);
         }
     }
 }
