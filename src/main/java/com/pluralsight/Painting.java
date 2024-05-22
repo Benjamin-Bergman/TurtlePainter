@@ -17,14 +17,28 @@ import java.util.stream.*;
  * Represents a painting.
  */
 public final class Painting implements Serializable {
+    /**
+     * The width of this painting.
+     */
     @val
     public final int width;
+    /**
+     * The height of this painting.
+     */
     @val
     public final int height;
-    @val
-    public final World world;
-    @val
-    public final Turtle turtle;
+    /**
+     * The canvas this painting draws to.
+     */
+    @var
+    @set(PropOption.Private)
+    public final transient World world;
+    /**
+     * The turtle this painting draws with.
+     */
+    @var
+    @set(PropOption.Private)
+    public final transient Turtle turtle;
     @val
     private final List<Shape<?>> shapes;
     private final transient BlockingQueue<Optional<Shape<?>>> queue = new LinkedBlockingQueue<>();
@@ -37,7 +51,7 @@ public final class Painting implements Serializable {
      * @param world  The canvas to draw to
      * @param turtle The turtle to draw with
      */
-    public Painting(int width, int height, List<Shape<?>> shapes, World world, Turtle turtle) {
+    public Painting(int width, int height, Collection<Shape<?>> shapes, World world, Turtle turtle) {
         this.width = width;
         this.height = height;
         this.shapes = shapes
@@ -47,6 +61,20 @@ public final class Painting implements Serializable {
         this.world = world;
         this.turtle = turtle;
         thread = null;
+    }
+
+    /**
+     * Sets the tools this painting will use to draw.
+     * Redraws the painting if applicable.
+     *
+     * @param world  The canvas to draw on
+     * @param turtle The turtle to draw with
+     */
+    public void setCanvas(World world, Turtle turtle) {
+        this.world = world;
+        this.turtle = turtle;
+        if (thread != null)
+            draw();
     }
 
     /**
