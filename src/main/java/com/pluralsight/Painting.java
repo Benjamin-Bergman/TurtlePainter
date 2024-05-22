@@ -11,6 +11,7 @@ import manifold.ext.props.rt.api.*;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
+import java.util.concurrent.locks.*;
 
 /**
  * Represents a painting.
@@ -27,7 +28,11 @@ public final class Painting implements Serializable {
     @val
     private final List<Shape<?>> shapes;
     private final AtomicInteger currentRun = new AtomicInteger(0);
-    private final AtomicBoolean running = new AtomicBoolean(false);
+
+    private final Lock runLock = new ReentrantLock();
+    private final Condition runSleep = runLock.newCondition();
+    private boolean running;
+    private boolean added;
 
     /**
      * @param width  The width in pixels
@@ -39,7 +44,7 @@ public final class Painting implements Serializable {
     public Painting(int width, int height, List<Shape<?>> shapes, World world, Turtle turtle) {
         this.width = width;
         this.height = height;
-        this.shapes = new ArrayList<>(shapes);
+        this.shapes = Collections.synchronizedList(new ArrayList<>(shapes));
         this.world = world;
         this.turtle = turtle;
     }
@@ -58,7 +63,7 @@ public final class Painting implements Serializable {
      * This will clear the canvas first.
      */
     public void draw() {
-        draw(currentRun.incrementAndGet());
+        draw(currentRun.incrementAndGet(), null);
     }
 
     /**
@@ -67,12 +72,14 @@ public final class Painting implements Serializable {
      * @param shape The shape to add
      */
     public void add(Shape<?> shape) {
-        shapes.add(shape);
-
-        // This shouldn't redraw the whole painting,
-        // but I don't want to figure out the necessary
-        // synchronization to make it do that.
-        drawAsync();
+        runLock.lock();
+        try {
+            shapes.add(shape);
+            if (running) added = true;
+            else new Thread(() -> draw(currentRun.incrementAndGet(), shapes.size() - 1)).start();
+        } finally {
+            runLock.unlock();
+        }
     }
 
     /**
@@ -85,29 +92,62 @@ public final class Painting implements Serializable {
         drawAsync();
     }
 
-    private void draw(Integer monitor) {
-        synchronized (running) {
-            while (running.getAndSet(true))
-                running.wait(0L, 0);
+    private void draw(int run, Integer startAt) {
+        runLock.lock();
+        try {
+            while (running) runSleep.await();
+            running = true;
+            added = false;
+        } finally {
+            runLock.unlock();
+        }
 
-            if (monitor != null && currentRun.getAcquire() != monitor) {
-                running.setRelease(false);
-                running.notifyAll();
+        if (currentRun.getAcquire() != run) {
+            runLock.lock();
+            try {
+                running = false;
+                runSleep.signalAll();
                 return;
+            } finally {
+                runLock.unlock();
             }
+        }
 
+        if (startAt == null)
             world.resizeWorld(width, height);
-            for (int i = 0; i < shapes.size(); i++) {
+        //noinspection ReassignedVariable
+        int i = Optional.ofNullable(startAt).orElse(0);
+        while (true) {
+            //noinspection ForLoopWithMissingComponent
+            for (; i < shapes.size(); i++) {
                 Shape<?> shape = shapes.get(i);
                 shape.draw(turtle);
-                if (monitor != null && currentRun.getAcquire() != monitor)
-                    break;
+                if (currentRun.getAcquire() != run) {
+                    runLock.lock();
+                    try {
+                        running = false;
+                        runSleep.signalAll();
+                        return;
+                    } finally {
+                        runLock.unlock();
+                    }
+                }
             }
-            turtle.penUp();
-            turtle.goTo(world.width + 100, world.height + 100);
 
-            running.setRelease(false);
-            running.notifyAll();
+            runLock.lock();
+            try {
+                if (!added) {
+                    turtle.penUp();
+                    turtle.goTo(world.width + 100, world.height + 100);
+
+                    running = false;
+                    runSleep.signalAll();
+                    return;
+                }
+                added = false;
+            } finally {
+                runLock.unlock();
+            }
         }
     }
 }
