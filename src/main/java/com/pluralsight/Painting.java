@@ -94,7 +94,14 @@ public final class Painting implements Serializable {
 
     private void runDrawQueue() {
         while (true) {
-            var command = queue.take();
+            //noinspection ReassignedVariable
+            var command = queue.poll();
+            //noinspection OptionalAssignedToNull
+            if (command == null) {
+                turtle.penUp();
+                turtle.goTo(width + 100, height + 100);
+                command = queue.take();
+            }
             if (command.isPresent())
                 command.get().draw(turtle);
             else
